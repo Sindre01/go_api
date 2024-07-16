@@ -2,13 +2,16 @@ package model
 
 import (
 	"go_api/database"
-	"gorm.io/gorm"
+	"time"
 )
 
 type Entry struct {
-	gorm.Model
-	Content string `gorm:"type:text" json:"content"`
-	UserID  uint
+	ID        uint       `gorm:"primary_key" json:"id"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	DeletedAt *time.Time `sql:"index" json:"deleted_at,omitempty"`
+	Content   string     `gorm:"type:text" json:"content"`
+	UserID    uint       `json:"user_id"`
 }
 
 func (entry *Entry) Save() (*Entry, error) {
