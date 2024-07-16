@@ -4,17 +4,22 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"go_api/controller"
 	"go_api/database"
+	_ "go_api/docs" // This line is necessary for go-swagger to find your docs
 	"go_api/middleware"
 	"go_api/model"
 	"log"
 )
 
 func main() {
+
 	loadEnv()
 	loadDatabase()
 	serveApplication()
+
 }
 
 func loadEnv() {
@@ -34,14 +39,16 @@ func serveApplication() {
 	router := gin.Default()
 
 	publicRoutes := router.Group("/auth")
-	publicRoutes.POST("/register", controller.Register)
 	publicRoutes.POST("/login", controller.Login)
+	publicRoutes.POST("/register", controller.Register)
 
 	protectedRoutes := router.Group("/api")
 	protectedRoutes.Use(middleware.JWTAuthMiddleware())
 	protectedRoutes.POST("/entry", controller.AddEntry)
 	protectedRoutes.GET("/entry", controller.GetAllEntries)
 
-	router.Run(":8000")
-	fmt.Println("Server running on port 8000")
+	url := ginSwagger.URL("http://localhost:8080/swagger/doc.json")
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
+	router.Run(":8080")
+	fmt.Println("Server running on port 8080")
 }

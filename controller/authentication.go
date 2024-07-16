@@ -7,6 +7,25 @@ import (
 	"net/http"
 )
 
+// ErrorResponse represents the structure of an error response
+type ErrorResponse struct {
+	Error string `json:"error"`
+}
+
+// JWTResponse represents the structure of a JWT response
+type JWTResponse struct {
+	JWT string `json:"jwt"`
+}
+
+// @Summary     Register a new user
+// @Description Register a new user with a username and password
+// @Accept      json
+// @Produce     json
+// @Param       user body     model.AuthenticationInput true "User registration data"
+// @Success     201  {object} model.User                "Created user"
+// @Failure     400  {object} ErrorResponse             "Error message"
+// @Router      /auth/register [post]
+
 func Register(context *gin.Context) {
 	var input model.AuthenticationInput
 
@@ -30,6 +49,14 @@ func Register(context *gin.Context) {
 	context.JSON(http.StatusCreated, gin.H{"user": savedUser})
 }
 
+// @Summary     Login a user
+// @Description Login a user and return a JWT token
+// @Accept      json
+// @Produce     json
+// @Param       user body     model.AuthenticationInput true "User login data"
+// @Success     200  {object} JWTResponse               "JWT token"
+// @Failure     400  {object} ErrorResponse             "Error message"
+// @Router      /auth/login [post]
 func Login(context *gin.Context) {
 	var input model.AuthenticationInput
 
